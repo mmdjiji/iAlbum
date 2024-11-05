@@ -1,15 +1,16 @@
 <template>
-  <div  style="height: 100%; overflow-y: auto" @scroll="handleScroll">
-    <div class="cnav">
+  <div style="height: 100%; overflow-y: auto;" @scroll="handleScroll">
+    <div class="cnav" style="pointer-events: none;">
       <div :class="['title', 'left', sidebar_shown_pc?'':'sidebar-hidden']">
         <span class="title-text">{{ album_friendly_name }}</span>
       </div>
       <div class="title right">
         <span style="color: #eee; margin-right: 10px;">{{ photo_count }}张图片</span>
-        <button @click="menu_more_is_shown = !menu_more_is_shown" style="">...</button>
+        <span style="pointer-events: auto;"><button @click="menu_more_is_shown = !menu_more_is_shown" style="">...</button></span>
+        
         <!-- 弹出的菜单 -->
-        <div class="context-menu-mask" v-show="menu_more_is_shown" @click="menu_more_is_shown = false"></div>
-        <div :class="['context-menu', menu_more_is_shown?'shown':'hidden']" v-show="menu_more_is_shown" style="top: 56px; right: 20px">
+        <div style="pointer-events: auto;" class="context-menu-mask" v-show="menu_more_is_shown" @click="menu_more_is_shown = false"></div>
+        <div :class="['context-menu', menu_more_is_shown?'shown':'hidden']" v-show="menu_more_is_shown" style="pointer-events: auto; top: 56px; right: 20px">
           <a
             @click="current_zoom_scale < 2 && ((current_zoom_scale++), (menu_more_is_shown = false))"
             :aria-disabled="current_zoom_scale >= 2">放大</a>
@@ -25,7 +26,6 @@
           <a v-show="base_name === '_fav'"
             @click="importFavClick()">导入个人收藏</a>
         </div>
-
       </div>
 
       <!-- 手机的上一页按钮-->
@@ -42,28 +42,32 @@
       </div>
     </div>
 
-    <div>
+
+    <div class="password-container" v-show="!unlocked">
+      <PasswordInput ref="password_input" :hint="hint" @submit-password="pwd => checkPassword(pwd)"></PasswordInput>
+    </div>
+    <div v-show="unlocked">
       <!-- thumbnail -->
       <div :class="['photo', 'box', 'scale-ratio-ratio-' + current_zoom_scale]" v-for="(photo, i) in photo_list" :photo-name="photo.name" :key="i"
           :style="{
-                backgroundImage: `url('${ get_thumbnail_image(photo.al, photo.name) }')`,
-                backgroundPosition: '0px 0px'
+            backgroundImage: `url('${ get_thumbnail_image(photo.al, photo.name) }')`,
+            backgroundPosition: 'center'
           }"
       >
         <!-- 点开图片 -->
         <div class="photo-mask" style="position: absolute; left: 0; top: 0; width: 100%; height: 100%;"
-            @click="raise_event_show_preview(photo.name, photo_list, i, photo.al, photo)"
+            @click="raise_event_show_preview(photo.name, photo_list, i, photo.al, photo, password)"
         >
         </div>
 
         <!-- 收藏按钮 -->
-        <div class="fav-btn" :style="{
+        <!-- <div class="fav-btn" :style="{
                 position: 'absolute', left: '20px', bottom: '20px',
                 display: photo.fav ? 'block' : ''
               }" @click="switchFavState(photo)" >
           <IconBase icon-color="white" v-if="!photo.fav"> <IconHeart /> </IconBase>
           <IconBase icon-color="white" v-else> <IconHeartFilled /> </IconBase>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -81,13 +85,14 @@ import IconBase from "@/icons/IconBase";
 import IconSideBar from "@/icons/IconSideBar";
 import IconHeart from "@/icons/IconHeart";
 import IconHeartFilled from "@/icons/IconHeartFilled";
-const md5 = require('js-md5');
+import PasswordInput from "@/components/PasswordInput";
 
 const PHOTO_PER_PAGE = 50;
 
 export default {
   name: "Content",
-  components: { IconSideBar, IconBase, IconHeart, IconHeartFilled },
+  // eslint-disable-next-line vue/no-unused-components
+  components: { IconSideBar, IconBase, IconHeart, IconHeartFilled, PasswordInput },
   props: [ 'base_name', 'album_friendly_name', 'sidebar_shown_pc' ],
   data() {
     return {
@@ -95,14 +100,16 @@ export default {
       current_page_to_load: 0,
       photo_count: 0,
       photo_list: [],
-      album_hash: '',
       initial_scroll_height: 0,
       response_load_new: true,
       fav_content_cache: {},
       fav_page_cache: null,
-      // UI Element -- Menu
       menu_more_is_shown: false,
       current_zoom_scale: 0,
+      secret: false,
+      unlocked: true,
+      hint: '',
+      password: '',
     }
   },
   computed: {
@@ -110,7 +117,7 @@ export default {
       return `${this.base_name}/_meta`;
     },
     album_get_image_at_current_page_json_name() {
-      return this.base_name + "/_page_" + String(this.current_page_to_load);
+      return this.base_name + `/_page_` + String(this.current_page_to_load);
     }
   },
   watch: {
@@ -123,11 +130,37 @@ export default {
     this.initialize();
   },
   methods: {
+    async checkPassword(password) {
+      // console.log('base_name:', this.base_name)
+      // console.log(password);
+      try {
+        const probe = await utils.get_json(this.base_name + `/${password}/probe`);
+        if(probe) {
+          // console.log('ok');
+          const key = JSON.parse(localStorage.getItem('key') || '{}');
+          key[this.base_name] = password;
+          localStorage.setItem('key', JSON.stringify(key));
+          this.$refs.password_input.feedback(true);
+          this.password = password;
+          this.unlocked = true;
+          return true;
+        } else {
+          this.password = '';
+          this.$refs.password_input.feedback(false);
+          return false;
+        }
+      } catch (err) {
+        console.log(err);
+        this.$refs.password_input.feedback(false);
+        return false;
+      }
+      
+    },
     raise_event_show_sidebar(val, mode) {
       this.$emit('should-show-sidebar', val, mode);
     },
-    raise_event_show_preview(image_file_name, photo_list, photo_index, album_name, photo_obj) {
-      this.$emit('preview-photo', image_file_name, photo_list, photo_index, album_name, photo_obj);
+    raise_event_show_preview(image_file_name, photo_list, photo_index, album_name, photo_obj, password) {
+      this.$emit('preview-photo', image_file_name, photo_list, photo_index, album_name, photo_obj, password);
     },
     async load_image() {
       // console.log("load album:", this.album_get_meta_json_name)
@@ -145,8 +178,7 @@ export default {
         for (let i=this.photo_list.length; i < max_i; i++) {
           this.photo_list.push(this.fav_page_cache[i]);
         }
-      }
-      else {
+      } else {
         this.photo_list.push(...await utils.get_json(this.album_get_image_at_current_page_json_name));
         this.applyFavoriteWithPhotos(); // TODO: 性能优化：先执行着一条语句再加入photolist
       }
@@ -155,11 +187,11 @@ export default {
       this.response_load_new = true;
     },
     get_thumbnail_image(alumn_name ,image_name) {
-      return "/api/" + alumn_name + "/_cache/" + image_name;
+      return `/api/${alumn_name}/${this.password}_cache/${image_name}`;
     },
 
     async initialize() {
-      if (this.base_name === "")
+      if (!this.base_name)
         return;
 
       this.current_page_to_load = 0;
@@ -167,7 +199,6 @@ export default {
       this.response_load_new = true;
       this.initial_scroll_height = 0;
       this.photo_count = this.page_count = 0;
-      this.album_hash = '';
 
       // get page count
       // console.log("get photo count: ", this.album_get_meta_json_name);
@@ -185,22 +216,43 @@ export default {
           }
         }
         this.photo_count = this.fav_page_cache.length;
-        this.album_hash = '';
 
         // console.log("-- Favorite album count:", this.photo_count);
-      }
-      // get normal album
-      else {
-        let album_config = (await utils.get_json(this.album_get_meta_json_name));
+      } else { // get normal album
+        const album_config = (await utils.get_json(this.album_get_meta_json_name));
         this.photo_count = album_config.count;
-        this.album_hash = album_config.hash;
+        this.secret = album_config.secret;
+        this.hint = album_config.hint;
+        this.unlocked = true;
+        this.password = '';
+        if(album_config.secret === true) { // 加密相册
+          // 读取localStorage中的密码，如果解不开就false
+          const key = JSON.parse(localStorage.getItem('key') || '{}');
+          if (key[this.base_name] === undefined) {
+            this.$refs.password_input.refresh();
+            this.unlocked = false;
+          } else {
+            const result = await this.checkPassword(key[this.base_name]);
+            if(result === false) {
+              this.$refs.password_input.refresh();
+              this.unlocked = false;
+            }
+          }
+        }
       }
       //this.photo_count = this.get_page_count(this.album_get_meta_json_name);
       this.page_count = Math.ceil(this.photo_count / PHOTO_PER_PAGE);
 
       // load page 0 first
       if (this.page_count > 0) {
-        this.load_image();
+        const args = await utils.parse_args();
+        if(args.i) { // 解决多线程异步竞争导致 _page_0 被 _default 抢先加载消耗 count++ 的问题
+          setTimeout(()=>{
+            this.load_image();
+          }, 10);
+        } else {
+          this.load_image();
+        }
       }
     },
     handleScroll: function(el) {
@@ -223,7 +275,7 @@ export default {
 
     // 用于获取localStorage对应的key
     getFavoriteLocalStorageKey(photo) {
-      return `album_fav_${photo.al}`;
+      return `fav_${photo.al}`;
     },
 
     // 用于获取localStorage中所有的key
@@ -231,7 +283,7 @@ export default {
       let keys = []
       for (let i = 0, len = localStorage.length; i < len ; ++i) {
         let _key = localStorage.key(i);
-        if (_key.startsWith("album_fav_"))
+        if (_key.startsWith("fav_"))
           keys.push(_key);
       }
       return keys;

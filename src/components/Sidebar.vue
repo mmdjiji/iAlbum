@@ -15,9 +15,9 @@
         </span>
       </div>
 
-      <!-- <div class="right-button-group">
+      <div class="right-button-group">
         <span @click="logout()"> <IconBase icon-color="#5555ff" height="21"> <IconExit /> </IconBase> </span>
-      </div> -->
+      </div>
     </div>
 
     <div class="title1 navtitle" :style="{ marginTop: '50px', opacity: 1-shouldShowSemiTransparentNavBar }">
@@ -35,10 +35,10 @@
         @click="switch_album('_recent', '最近项目')">
         <span>最近项目</span>
       </a>
-      <a :class="selected('_fav')"
+      <!-- <a :class="selected('_fav')"
         @click="switch_album('_fav', '收藏夹')">
         <span>收藏夹</span>
-      </a>
+      </a> -->
     </div>
 
     <div class="title2">
@@ -49,8 +49,9 @@
         @click="switch_album(album.name, album.friendly_name)"
         v-for="album in album_list" :key="album.name">
 
+        <!-- preview.jpg -->
         <div style="position: relative">
-          <div class="list_img" :style="{ backgroundImage: album.preview==='' ? '':'url(\'/api/' + album.name + '/' + album.preview + '\')' }"></div>
+          <div class="list_img" :style="{ backgroundImage: `url(/api/${album.name}/${album.preview||'preview.jpg'})` }"></div>
           <span style="margin-left: 27px;">{{ album.friendly_name }}</span>
         </div>
 
@@ -72,14 +73,25 @@ import IconExit from "@/icons/IconExit";
 export default {
   name: "Sidebar",
   // eslint-disable-next-line vue/no-unused-components
-  components: {IconSideBar, IconBase, IconExit},
+  components: { IconSideBar, IconBase, IconExit },
   data: () => ({
     album_list: [],
     selected_album_name: '_default',
     show_banner: true,
-
     shouldShowSemiTransparentNavBar: false,
   }),
+  async mounted() {
+    const args = await utils.parse_args();
+    if(args.i) {
+      const album_list = await this.getAlbumList();
+      for(const i of album_list) {
+        if(i.name === args.i) {
+          this.switch_album(i.name, i.friendly_name);
+          break;
+        }
+      }
+    }
+  },
   methods: {
     raise_event_show_sidebar(val, mode) {
       this.$emit('should-show-sidebar', val, mode);
@@ -103,10 +115,11 @@ export default {
       }
     },
     async getAlbumList() {
-      this.album_list = await utils.get_json('meta')
+      this.album_list = await utils.get_json('meta');
+      return this.album_list;
     },
     logout() {
-      // localStorage.removeItem('password');
+      localStorage.removeItem('key');
       location.reload();
     }
   }

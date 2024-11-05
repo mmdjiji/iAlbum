@@ -4,7 +4,7 @@
       <ContentView :base_name="contentAlbumName" :album_friendly_name="contentFriendlyName"
                   @should-show-sidebar="(val, mode) =>  mode === 'mobile' ? sidebar_shown_on_mobile_mode = val : sidebar_shown_on_pc_mode = val"
                   :sidebar_shown_pc = "sidebar_shown_on_pc_mode"
-                  @preview-photo="(a,b,c,d,e) => previewPhoto(a,b,c,d,e)"
+                  @preview-photo="(a,b,c,d,e,f) => previewPhoto(a,b,c,d,e,f)"
       ></ContentView>
     </div>
     <div class="sidebar-mobile-mask" v-show="sidebar_shown_on_mobile_mode" @click="sidebar_shown_on_mobile_mode = false"></div>
@@ -16,12 +16,9 @@
     </div>
     <div class="preview-container" v-show="preview_shown">
       <Preview  :current_photo_filename="preview_filename" :image_list="preview_imagelist" :index="preview_index" :current_album_name="preview_album_name"
-                :catalog_name="contentFriendlyName" :current_photo="preview_current_obj"
+                :catalog_name="contentFriendlyName" :current_photo="preview_current_obj" :password="preview_password"
                 @hide-preview="preview_shown = false"
       ></Preview>
-    </div>
-    <div class="password-container" v-show="password_input_shown">
-      <PasswordInput ref="password_input" @submit-password="pwd => checkPassword(pwd)"></PasswordInput>
     </div>
   </div>
 </template>
@@ -30,15 +27,11 @@
 import Sidebar from "@/components/Sidebar";
 import ContentView from "@/components/Content";
 import Preview from '@/components/Preview';
-import PasswordInput from "@/components/PasswordInput";
-
-import utils from "@/js/utils";
-const md5 = require('js-md5');
 
 export default {
   name: 'App',
   components: {
-    Sidebar, ContentView, Preview, PasswordInput
+    Sidebar, ContentView, Preview
   },
   data: () => ({
     activeName: 'ialbum',
@@ -48,48 +41,28 @@ export default {
 
     password_input_shown: false,
 
-    //preview
+    // preview
     preview_shown: false,
     preview_filename: '',
     preview_imagelist: [],
     preview_index: 0,
     preview_album_name: '',
     preview_current_obj: '',
+    preview_password: '',
 
     contentAlbumName: "_default",
     contentFriendlyName: "相册",
   }),
   methods: {
-    previewPhoto(filename, photo_list, index, album_name, photo_obj) {
+    previewPhoto(filename, photo_list, index, album_name, photo_obj, password) {
       this.preview_filename = filename;
       this.preview_index = index;
       this.preview_imagelist = photo_list;
       this.preview_album_name = album_name;
       this.preview_current_obj = photo_obj;
+      this.preview_password = password;
       this.preview_shown = true;
     },
-
-    // async requirePassword() {
-    //   this.password_input_shown = true;
-    // },
-
-    // async checkPassword(pwd) {
-    //   // is a normal login
-    //   window.miyuki_password = pwd
-    //   window.enabled_password = true;
-    //   try {
-    //     // await utils.get_secured_json('get-album');
-    //     // localStorage.setItem("password", pwd)
-    //     // this.$refs.password_input.feedback(true);
-    //     // this.password_input_shown = false;
-    //     this.initialize();
-    //   }
-    //   catch (ee) {
-    //     localStorage.removeItem("password");
-    //     this.requirePassword();
-    //     this.$refs.password_input.feedback(false);
-    //   }
-    // },
 
     initialize() {
       this.$refs.sidebar.getAlbumList();
@@ -99,19 +72,7 @@ export default {
     if (window.innerWidth <= 500) {
       this.sidebar_shown_on_mobile_mode = true;
     }
-
-    // let _args = utils.parse_args();
     this.initialize();
-
-    // if (localStorage.getItem("password") !== null) {
-    //   this.checkPassword(localStorage.getItem("password"))
-    // this.requirePassword();
-    // }
-    // else {
-    //   window.enabled_password = false;
-    //   this.initialize();
-    // }
-
   }
 }
 </script>

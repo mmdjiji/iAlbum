@@ -15,8 +15,6 @@
       <div class="right-button-group">
         <a @click="downloadPhoto()">下载</a>
       </div>
-
-
     </div>
   </div>
 </template>
@@ -27,7 +25,7 @@ import '../css/preview.css';
 
 export default {
   name: "Preview",
-  props: [ 'current_album_name', 'current_photo_filename', 'image_list', 'index', 'catalog_name', 'current_photo' ],
+  props: [ 'current_album_name', 'current_photo_filename', 'image_list', 'index', 'catalog_name', 'current_photo', 'password' ],
   data: () => ({
     showNavBar: true,
     preview_img_style: {},
@@ -38,10 +36,10 @@ export default {
       return this.current_photo_filename.replace(/\.[a-z|A-Z|0-9]*$/g, "");
     },
     thumbnail_path() {
-      return `/api/${this.current_album_name}/_cache/${this.current_photo_filename}`;
+      return `/api/${this.current_album_name}/${this.password}_cache/${this.current_photo_filename}`;
     },
     photo_path() {
-      return `/api/${this.current_album_name}/raw/${this.current_photo_filename}`;
+      return `/api/${this.current_album_name}/${this.password || 'raw'}/${this.current_photo_filename}`;
     },
   },
   methods: {

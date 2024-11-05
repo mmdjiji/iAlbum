@@ -52,6 +52,7 @@ div.cnav button:active {
 
 div.cnav .back {
     display: none;
+    pointer-events: auto;
 }
 
 div.cnav .back .backtext {
@@ -113,12 +114,17 @@ div.photo {
     background-size:cover;
 }
 
+.back .sidebar-hidden {
+    pointer-events: auto !important;
+}
+
 @media screen and (max-width: 1100px) {
     div.cnav .back {
         position: absolute;
         top: 20px;
         left: 20px;
         display: block;
+        pointer-events: auto;
     }
 
     div.cnav .title.left {

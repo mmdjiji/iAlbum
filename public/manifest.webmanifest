@@ -4,8 +4,8 @@
     "display": "standalone",
     "scope": ".",
     "start_url": ".",
-    "name": "Beautiful Album",
-    "short_name": "Beautiful Album",
+    "name": "iAlbum",
+    "short_name": "iAlbum",
     "icons": [
         {
             "src": "./icon-192x192.png",

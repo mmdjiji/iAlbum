@@ -13,7 +13,7 @@
       </div>
 
       <div class="right-button-group">
-        <a href="javascript:void(0)" @click="downloadPhoto()">下载</a>
+        <a @click="downloadPhoto()">下载</a>
       </div>
 
 
@@ -38,10 +38,10 @@ export default {
       return this.current_photo_filename.replace(/\.[a-z|A-Z|0-9]*$/g, "");
     },
     thumbnail_path() {
-      return `/api/album-cache/${this.current_album_name}/${this.current_photo_filename}`;
+      return `/api/${this.current_album_name}/_cache/${this.current_photo_filename}`;
     },
     photo_path() {
-      return `/api/album/${this.current_album_name}/${this.current_photo_filename}`;
+      return `/api/${this.current_album_name}/raw/${this.current_photo_filename}`;
     },
   },
   methods: {
@@ -49,10 +49,10 @@ export default {
       this.$emit('hide-preview');
     },
     thumbnail_path_at_index(i) {
-      return `/api/album-cache/${this.image_list[i].al}/${this.image_list[i].name}`;
+      return `/api/${this.image_list[i].al}/_cache/${this.image_list[i].name}`;
     },
     photo_path_at_index(i) {
-      return `/api/album/${this.image_list[i].al}/${this.image_list[i].name}`;
+      return `/api/${this.image_list[i].al}/raw/${this.image_list[i].name}`;
     },
     downloadPhoto() {
       window.open(this.photo_path);
@@ -68,7 +68,7 @@ export default {
       let dr = pr - wr;
       const fill_width = 'auto 100%';
       const fill_height = '100% auto';
-      console.log(pr, wr);
+      // console.log(pr, wr);
       if (pr > 1) { // 横屏
         if (wr > 1) { // 横图
           if (dr > 0) return fill_height;

@@ -1,20 +1,13 @@
-///////// NETWORK
-
-function get_secured_json(url) {
-    let password = ".";
-    if (window.enabled_password)
-        password = window.miyuki_password;
-    return new Promise((resolve, reject) => {
-        fetch(`/api/${password}/${url}.json`).then(function(response) {
-            if(response.ok) {
-                return resolve(response.json())
-            }
-            throw new Error('Network response was not ok: url');
-        }).catch(function (x) {
-            console.error('HTTP Request: /GET ' + url + ' [FAILED]', x);
-            reject(x);
-        });
-    })
+function parse_args() {
+    let _args = {};
+    let args = location.href.split("?")[1];
+    if (typeof args == "undefined")
+        return _args;
+    args.split('&').forEach(function(item) {
+        var s = item.split('=');
+        _args[s[0]] = s[1];
+    });
+    return _args;
 }
 
 function get_json(url) {
@@ -106,7 +99,7 @@ function GetFileContent(ext='.txt') {
 }
 
 export default {
-    get_secured_json: get_secured_json,
+    parse_args: parse_args,
     get_json: get_json,
     md5_transform: md5_transform,
     download_text_as_file: DownloadTextAsFile,

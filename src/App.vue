@@ -2,16 +2,16 @@
   <div>
     <div :class="['content-container', sidebar_shown_on_pc_mode?'':'side-hidden-screen']">
       <ContentView :base_name="contentAlbumName" :album_friendly_name="contentFriendlyName"
-                   @should-show-sidebar="(val, mode) =>  mode === 'mobile' ? sidebar_shown_on_mobile_mode = val : sidebar_shown_on_pc_mode = val"
-                   :sidebar_shown_pc = "sidebar_shown_on_pc_mode"
-                   @preview-photo="(a,b,c,d,e) => previewPhoto(a,b,c,d,e)"
+                  @should-show-sidebar="(val, mode) =>  mode === 'mobile' ? sidebar_shown_on_mobile_mode = val : sidebar_shown_on_pc_mode = val"
+                  :sidebar_shown_pc = "sidebar_shown_on_pc_mode"
+                  @preview-photo="(a,b,c,d,e) => previewPhoto(a,b,c,d,e)"
       ></ContentView>
     </div>
     <div class="sidebar-mobile-mask" v-show="sidebar_shown_on_mobile_mode" @click="sidebar_shown_on_mobile_mode = false"></div>
     <div :class="['sidebar-container', sidebar_shown_on_pc_mode?'':'side-hidden-screen', sidebar_shown_on_mobile_mode?'sidebar-mobile-shown':'']">
       <Sidebar ref="sidebar"
-               @switch-album="(album_name, friendly_name) => { this.contentAlbumName = album_name; this.contentFriendlyName = friendly_name; }"
-               @should-show-sidebar="(val, mode) =>  mode === 'mobile' ? sidebar_shown_on_mobile_mode = val : sidebar_shown_on_pc_mode = val"
+              @switch-album="(album_name, friendly_name) => { this.contentAlbumName = album_name; this.contentFriendlyName = friendly_name; }"
+              @should-show-sidebar="(val, mode) =>  mode === 'mobile' ? sidebar_shown_on_mobile_mode = val : sidebar_shown_on_pc_mode = val"
       ></Sidebar>
     </div>
     <div class="preview-container" v-show="preview_shown">
@@ -33,7 +33,7 @@ import Preview from '@/components/Preview';
 import PasswordInput from "@/components/PasswordInput";
 
 import utils from "@/js/utils";
-let md5 = require('js-md5');
+const md5 = require('js-md5');
 
 export default {
   name: 'App',
@@ -41,12 +41,14 @@ export default {
     Sidebar, ContentView, Preview, PasswordInput
   },
   data: () => ({
-    activeName: 'beautiful-album',
-    content_view_shown: true,
+    activeName: 'ialbum',
+    // sidebar ui
     sidebar_shown_on_mobile_mode: false,
     sidebar_shown_on_pc_mode: true,
+
     password_input_shown: false,
 
+    //preview
     preview_shown: false,
     preview_filename: '',
     preview_imagelist: [],
@@ -54,8 +56,8 @@ export default {
     preview_album_name: '',
     preview_current_obj: '',
 
-    contentAlbumName: "",
-    contentFriendlyName: "",
+    contentAlbumName: "_default",
+    contentFriendlyName: "相册",
   }),
   methods: {
     previewPhoto(filename, photo_list, index, album_name, photo_obj) {
@@ -67,109 +69,48 @@ export default {
       this.preview_shown = true;
     },
 
-    async requirePassword() {
-      this.password_input_shown = true;
-    },
+    // async requirePassword() {
+    //   this.password_input_shown = true;
+    // },
 
-    async checkPassword(pwd) {
-      // check if is share link
-      if (window.is_share_link) {
-        let album_hash = utils.md5_transform(window.share_id, pwd);
-        console.log("share id:  ", window.share_id);
-        console.log("password:  ", pwd);
-        console.log("album_hash:", album_hash);
-
-        try {
-          await utils.get_json(`shared/${album_hash}-get-photo-count`);
-          this.$refs.password_input.feedback(true);
-          this.password_input_shown = false;
-
-          this.initialize_for_share(album_hash); // initialize for share link
-        }
-        catch (ee) {
-          this.requirePassword();
-          this.$refs.password_input.feedback(false);
-        }
-        return;
-      }
-
-      // is a normal login
-      window.miyuki_password = pwd
-      window.enabled_password = true;
-      try {
-        await utils.get_secured_json('get-album');
-        localStorage.setItem("password", pwd)
-        this.$refs.password_input.feedback(true);
-        this.password_input_shown = false;
-        this.initialize();
-      }
-      catch (ee) {
-        localStorage.removeItem("password");
-        this.requirePassword();
-        this.$refs.password_input.feedback(false);
-      }
-    },
+    // async checkPassword(pwd) {
+    //   // is a normal login
+    //   window.miyuki_password = pwd
+    //   window.enabled_password = true;
+    //   try {
+    //     // await utils.get_secured_json('get-album');
+    //     // localStorage.setItem("password", pwd)
+    //     // this.$refs.password_input.feedback(true);
+    //     // this.password_input_shown = false;
+    //     this.initialize();
+    //   }
+    //   catch (ee) {
+    //     localStorage.removeItem("password");
+    //     this.requirePassword();
+    //     this.$refs.password_input.feedback(false);
+    //   }
+    // },
 
     initialize() {
       this.$refs.sidebar.getAlbumList();
-
-      this.contentAlbumName = "/all";
-      this.contentFriendlyName = "图库";
     },
-
-    initialize_for_share(album_hash) {
-      this.$refs.sidebar.getAlbumListForShare(album_hash);
-
-      this.contentAlbumName = "/share";
-      this.contentFriendlyName = "共享的相册";
-    }
   },
   async mounted() {
-    if (window.innerWidth <= 500)
+    if (window.innerWidth <= 500) {
       this.sidebar_shown_on_mobile_mode = true;
-
-    // Check if password enabled
-    let password_enabled;
-
-    function parse_args() {
-      let _args = {};
-      let args = location.href.split("?")[1];
-      if (typeof args == "undefined")
-        return _args;
-      args.split('&').forEach(function(item) {
-        var s = item.split('=');
-        _args[s[0]] = s[1];
-      });
-      return _args;
-    }
-    let _args = parse_args();
-
-    // check if is a share link
-    window.is_share_link = typeof _args["shared_id"] !== "undefined";
-    window.share_id = String(_args["shared_id"]).padEnd(32, "0")
-    password_enabled = window.is_share_link;
-
-    if (window.is_share_link) {
-      // clear stored password if is a share link
-      localStorage.removeItem('password');
     }
 
-    if (!window.is_share_link) {
-      password_enabled = await utils.get_json('password');
-      password_enabled = password_enabled.enabled;
-    }
+    // let _args = utils.parse_args();
+    this.initialize();
 
-    let __TRUE__ = true;
-    if (password_enabled) {
-      if (localStorage.getItem("password") !== null) {
-        this.checkPassword(localStorage.getItem("password"))
-      }
-      else this.requirePassword();
-    }
-    else {
-      window.enabled_password = false;
-      this.initialize();
-    }
+    // if (localStorage.getItem("password") !== null) {
+    //   this.checkPassword(localStorage.getItem("password"))
+    // this.requirePassword();
+    // }
+    // else {
+    //   window.enabled_password = false;
+    //   this.initialize();
+    // }
 
   }
 }

@@ -1,4 +1,4 @@
-![](assets/logo.svg)
+<img src="./assets/logo.svg" align="center" />
 
 ## 特性
 

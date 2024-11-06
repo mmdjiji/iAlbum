@@ -51,7 +51,7 @@ export default {
     preview_password: '',
 
     contentAlbumName: "_default",
-    contentFriendlyName: "相册",
+    contentFriendlyName: "最近项目",
   }),
   methods: {
     previewPhoto(filename, photo_list, index, album_name, photo_obj, password) {

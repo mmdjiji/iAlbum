@@ -27,14 +27,14 @@
     <div class="listview normal-menu-ui" style="margin-top: 5px;">
       <a v-show="show_banner" 
         :class="selected('_default')"
-        @click="switch_album('_default', '相册')">
-        <span>相册</span>
+        @click="switch_album('_default', '最近项目')">
+        <span>最近项目</span>
       </a>
-      <a v-show="show_banner"
+      <!-- <a v-show="show_banner"
         :class="selected('_recent')"
         @click="switch_album('_recent', '最近项目')">
         <span>最近项目</span>
-      </a>
+      </a> -->
       <!-- <a :class="selected('_fav')"
         @click="switch_album('_fav', '收藏夹')">
         <span>收藏夹</span>

@@ -3,7 +3,7 @@
     <div style="position: relative; height: 100%; width: 100%; margin: 0 auto">
       <div class="dialog" v-show="true || password_dialog_shown">
         <div class="title">
-          相册
+          加密相册
         </div>
         <div class="ctnt">
           <div v-if="!passwordErrorMsgShown"><p>{{ hint }}</p></div>

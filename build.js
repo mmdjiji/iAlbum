@@ -158,9 +158,9 @@ const main = async () => {
   // const recentJson = defaultJson.sort((a, b) => b.ct - a.ct).slice(0, RECENT_SLICE); // 按时间倒序
   // const recentPages = splitArray(recentJson, PHOTO_PER_PAGE);
   // for(let i in recentPages) {
-  //   fs.writeFileSync(`${DIST_PATH}/_recent/page_${i}.json`, JSON.stringify(recentPages[i]));
+  //   fs.writeFileSync(`${DIST_PATH}/recent/page_${i}.json`, JSON.stringify(recentPages[i]));
   // }
-  // fs.writeFileSync(`${DIST_PATH}/_recent/meta.json`, JSON.stringify({ count: recentJson.length }));
+  // fs.writeFileSync(`${DIST_PATH}/recent/meta.json`, JSON.stringify({ count: recentJson.length }));
 
   console.log('Generated meta.json and page.json.');
 }

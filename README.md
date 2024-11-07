@@ -31,7 +31,7 @@
 ```yaml
 version: 1.0                 # 配置文件版本，默认 1.0
 album:
-  - name: travel             # 相册文件夹名
+  - name: travel             # 相册文件夹名（注意不能为`default`）
     friendly_name: 旅行      # 相册显示名
     preview: IMG_0001.jpg    # 预览图（一定要填写实际存在的文件名）
   - name: secret

@@ -37,7 +37,7 @@ export default {
       return this.current_photo_filename.replace(/\.[a-z|A-Z|0-9]*$/g, "");
     },
     thumbnail_path() {
-      return `${utils.publicPath}/api/${this.current_album_name}/${this.password}_cache/${this.current_photo_filename}`;
+      return `${utils.publicPath}/api/${this.current_album_name}/${this.password ? `${this.password}_` : ''}cache/${this.current_photo_filename}`;
     },
     photo_path() {
       return `${utils.publicPath}/api/${this.current_album_name}/${this.password || 'raw'}/${this.current_photo_filename}`;
@@ -48,7 +48,7 @@ export default {
       this.$emit('hide-preview');
     },
     thumbnail_path_at_index(i) {
-      return `${utils.publicPath}/api/${this.image_list[i].al}/_cache/${this.image_list[i].name}`;
+      return `${utils.publicPath}/api/${this.image_list[i].al}/${this.image_list[i].name}`;
     },
     photo_path_at_index(i) {
       return `${utils.publicPath}/api/${this.image_list[i].al}/raw/${this.image_list[i].name}`;

@@ -50,7 +50,7 @@ export default {
     preview_current_obj: '',
     preview_password: '',
 
-    contentAlbumName: "_default",
+    contentAlbumName: "default",
     contentFriendlyName: "最近项目",
   }),
   methods: {

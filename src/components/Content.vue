@@ -114,10 +114,10 @@ export default {
   },
   computed: {
     album_get_meta_json_name() {
-      return `${this.base_name}/_meta`;
+      return `${this.base_name}/meta`;
     },
     album_get_image_at_current_page_json_name() {
-      return this.base_name + `/_page_` + String(this.current_page_to_load);
+      return this.base_name + `/page_` + String(this.current_page_to_load);
     }
   },
   watch: {
@@ -187,7 +187,7 @@ export default {
       this.response_load_new = true;
     },
     get_thumbnail_image(alumn_name ,image_name) {
-      return `${utils.publicPath}/api/${alumn_name}/${this.password}_cache/${image_name}`;
+      return `${utils.publicPath}/api/${alumn_name}/${this.password ? `${this.password}_` : ''}cache/${image_name}`;
     },
 
     async initialize() {
@@ -246,7 +246,7 @@ export default {
       // load page 0 first
       if (this.page_count > 0) {
         const args = await utils.parse_args();
-        if(args.i) { // 解决多线程异步竞争导致 _page_0 被 _default 抢先加载消耗 count++ 的问题
+        if(args.i) { // 解决多线程异步竞争导致 page_0 被 default 抢先加载消耗 count++ 的问题
           setTimeout(()=>{
             this.load_image();
           }, 10);

@@ -26,13 +26,13 @@
 
     <div class="listview normal-menu-ui" style="margin-top: 5px;">
       <a v-show="show_banner" 
-        :class="selected('_default')"
-        @click="switch_album('_default', '最近项目')">
+        :class="selected('default')"
+        @click="switch_album('default', '最近项目')">
         <span>最近项目</span>
       </a>
       <!-- <a v-show="show_banner"
-        :class="selected('_recent')"
-        @click="switch_album('_recent', '最近项目')">
+        :class="selected('recent')"
+        @click="switch_album('recent', '最近项目')">
         <span>最近项目</span>
       </a> -->
       <!-- <a :class="selected('_fav')"
@@ -77,7 +77,7 @@ export default {
   components: { IconSideBar, IconBase, IconExit },
   data: () => ({
     album_list: [],
-    selected_album_name: '_default',
+    selected_album_name: 'default',
     show_banner: true,
     shouldShowSemiTransparentNavBar: false,
     publicPath: utils.publicPath,

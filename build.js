@@ -76,15 +76,15 @@ const main = async () => {
   console.log('Generated meta.json.');
 
   // 创建相册目录
-  fs.mkdirSync(`${DIST_PATH}/_default`); // 默认相册
-  fs.mkdirSync(`${DIST_PATH}/_recent`); // 最近相册
+  fs.mkdirSync(`${DIST_PATH}/default`); // 默认相册
+  // fs.mkdirSync(`${DIST_PATH}/recent`); // 最近相册
   for(const i of album) {
     fs.mkdirSync(`${DIST_PATH}/${i.name}`);
     if(!i.password) { // 非加密相册
       fs.cpSync(`${ALBUM_PATH}/${i.name}`, `${DIST_PATH}/${i.name}/raw`, { recursive: true });
-      fs.mkdirSync(`${DIST_PATH}/${i.name}/_cache`);
+      fs.mkdirSync(`${DIST_PATH}/${i.name}/cache`);
       fs.readdirSync(`${DIST_PATH}/${i.name}/raw`).forEach(async j => {
-        await compress(`${DIST_PATH}/${i.name}/raw/${j}`, `${DIST_PATH}/${i.name}/_cache/${j}`);
+        await compress(`${DIST_PATH}/${i.name}/raw/${j}`, `${DIST_PATH}/${i.name}/cache/${j}`);
       });
       await compress(`${DIST_PATH}/${i.name}/raw/${i.preview}`, `${DIST_PATH}/${i.name}/preview.jpg`);
     } else { // 加密相册
@@ -104,7 +104,7 @@ const main = async () => {
   for(const i of album) {
     if(!i.password) { // 非加密相册
       const list = await getFiles(`${DIST_PATH}/${i.name}/raw/`);
-      fs.writeFileSync(`${DIST_PATH}/${i.name}/_meta.json`, JSON.stringify({ count: list.length }));
+      fs.writeFileSync(`${DIST_PATH}/${i.name}/meta.json`, JSON.stringify({ count: list.length }));
       const pageJson = [];
       for(const j of list) {
         const dimensions = sizeOf(`${DIST_PATH}/${i.name}/raw/${j}`);
@@ -120,12 +120,12 @@ const main = async () => {
       }
       const pages = splitArray(pageJson, PHOTO_PER_PAGE);
       for(let j in pages) {
-        fs.writeFileSync(`${DIST_PATH}/${i.name}/_page_${j}.json`, JSON.stringify(pages[j]));
+        fs.writeFileSync(`${DIST_PATH}/${i.name}/page_${j}.json`, JSON.stringify(pages[j]));
       }
     } else { // 加密相册
       const md5password = md5(String(i.password));
       const list = await getFiles(`${DIST_PATH}/${i.name}/${md5password}/`);
-      fs.writeFileSync(`${DIST_PATH}/${i.name}/_meta.json`, JSON.stringify({
+      fs.writeFileSync(`${DIST_PATH}/${i.name}/meta.json`, JSON.stringify({
         count: list.length - 1, // without probe.json
         secret: true,
         hint: i.hint,
@@ -145,24 +145,24 @@ const main = async () => {
       }
       const pages = splitArray(pageJson, PHOTO_PER_PAGE);
       for(let j in pages) {
-        fs.writeFileSync(`${DIST_PATH}/${i.name}/_page_${j}.json`, JSON.stringify(pages[j]));
+        fs.writeFileSync(`${DIST_PATH}/${i.name}/page_${j}.json`, JSON.stringify(pages[j]));
       }
     }
   }
   const defaultPages = splitArray(defaultJson.sort((a, b) => b.ct - a.ct), PHOTO_PER_PAGE); // 按时间倒序
   for(let i in defaultPages) {
-    fs.writeFileSync(`${DIST_PATH}/_default/_page_${i}.json`, JSON.stringify(defaultPages[i]));
+    fs.writeFileSync(`${DIST_PATH}/default/page_${i}.json`, JSON.stringify(defaultPages[i]));
   }
-  fs.writeFileSync(`${DIST_PATH}/_default/_meta.json`, JSON.stringify({ count: defaultJson.length }));
+  fs.writeFileSync(`${DIST_PATH}/default/meta.json`, JSON.stringify({ count: defaultJson.length }));
 
   // const recentJson = defaultJson.sort((a, b) => b.ct - a.ct).slice(0, RECENT_SLICE); // 按时间倒序
   // const recentPages = splitArray(recentJson, PHOTO_PER_PAGE);
   // for(let i in recentPages) {
-  //   fs.writeFileSync(`${DIST_PATH}/_recent/_page_${i}.json`, JSON.stringify(recentPages[i]));
+  //   fs.writeFileSync(`${DIST_PATH}/_recent/page_${i}.json`, JSON.stringify(recentPages[i]));
   // }
-  // fs.writeFileSync(`${DIST_PATH}/_recent/_meta.json`, JSON.stringify({ count: recentJson.length }));
+  // fs.writeFileSync(`${DIST_PATH}/_recent/meta.json`, JSON.stringify({ count: recentJson.length }));
 
-  console.log('Generated _meta.json and _page.json.');
+  console.log('Generated meta.json and page.json.');
 }
 
 main();

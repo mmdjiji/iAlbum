@@ -51,7 +51,7 @@
 
         <!-- preview.jpg -->
         <div style="position: relative">
-          <div class="list_img" :style="{ backgroundImage: `url(/api/${album.name}/${album.preview||'preview.jpg'})` }"></div>
+          <div class="list_img" :style="{ backgroundImage: `url(${publicPath}/api/${album.name}/${album.preview||'preview.jpg'})` }"></div>
           <span style="margin-left: 27px;">{{ album.friendly_name }}</span>
         </div>
 
@@ -69,6 +69,7 @@ import utils from "@/js/utils";
 import IconBase from "@/icons/IconBase";
 import IconSideBar from "@/icons/IconSideBar";
 import IconExit from "@/icons/IconExit";
+import { publicPath } from '../../vue.config';
 
 export default {
   name: "Sidebar",
@@ -79,6 +80,7 @@ export default {
     selected_album_name: '_default',
     show_banner: true,
     shouldShowSemiTransparentNavBar: false,
+    publicPath: utils.publicPath,
   }),
   async mounted() {
     const args = await utils.parse_args();

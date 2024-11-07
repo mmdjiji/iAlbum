@@ -187,7 +187,7 @@ export default {
       this.response_load_new = true;
     },
     get_thumbnail_image(alumn_name ,image_name) {
-      return `/api/${alumn_name}/${this.password}_cache/${image_name}`;
+      return `${utils.publicPath}/api/${alumn_name}/${this.password}_cache/${image_name}`;
     },
 
     async initialize() {

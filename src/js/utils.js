@@ -1,3 +1,5 @@
+const publicPath = '/iAlbum';
+
 function parse_args() {
     let _args = {};
     let args = location.href.split("?")[1];
@@ -12,7 +14,7 @@ function parse_args() {
 
 function get_json(url) {
     return new Promise((resolve, reject) => {
-        fetch(`/api/${url}.json`).then(function(response) {
+        fetch(`${publicPath}/api/${url}.json`).then(function(response) {
             if(response.ok) {
                 return resolve(response.json())
             }
@@ -99,6 +101,7 @@ function GetFileContent(ext='.txt') {
 }
 
 export default {
+    publicPath: publicPath,
     parse_args: parse_args,
     get_json: get_json,
     md5_transform: md5_transform,

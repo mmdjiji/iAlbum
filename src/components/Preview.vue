@@ -22,6 +22,7 @@
 <script>
 import '../css/style.css';
 import '../css/preview.css';
+import utils from "@/js/utils";
 
 export default {
   name: "Preview",
@@ -36,10 +37,10 @@ export default {
       return this.current_photo_filename.replace(/\.[a-z|A-Z|0-9]*$/g, "");
     },
     thumbnail_path() {
-      return `/api/${this.current_album_name}/${this.password}_cache/${this.current_photo_filename}`;
+      return `${utils.publicPath}/api/${this.current_album_name}/${this.password}_cache/${this.current_photo_filename}`;
     },
     photo_path() {
-      return `/api/${this.current_album_name}/${this.password || 'raw'}/${this.current_photo_filename}`;
+      return `${utils.publicPath}/api/${this.current_album_name}/${this.password || 'raw'}/${this.current_photo_filename}`;
     },
   },
   methods: {
@@ -47,10 +48,10 @@ export default {
       this.$emit('hide-preview');
     },
     thumbnail_path_at_index(i) {
-      return `/api/${this.image_list[i].al}/_cache/${this.image_list[i].name}`;
+      return `${utils.publicPath}/api/${this.image_list[i].al}/_cache/${this.image_list[i].name}`;
     },
     photo_path_at_index(i) {
-      return `/api/${this.image_list[i].al}/raw/${this.image_list[i].name}`;
+      return `${utils.publicPath}/api/${this.image_list[i].al}/raw/${this.image_list[i].name}`;
     },
     downloadPhoto() {
       window.open(this.photo_path);

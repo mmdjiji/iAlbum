@@ -14,7 +14,7 @@
 
 ## 快速上手
 
-首先，你需要在 GitHub 上选择 `Use this template` 按钮，然后填写相应信息，创建一个新的仓库。编辑 `album` 目录中的 `meta.yml` 文件和里面的照片，然后直接提交到仓库，GitHub Actions 会自动构建并部署到 GitHub Pages。
+首先，你需要在 GitHub 上选择 `Use this template` 按钮，然后填写相应信息，创建一个新的仓库。将 `vue.config.js` 中的 `publicPath` 设置为你仓库的名称（部署路径，如果你打算部署在根上则设置为 `/` 或直接删除该行），编辑 `album` 目录中的 `meta.yml` 文件和里面的照片，然后直接提交到仓库，GitHub Actions 会自动构建并部署到 GitHub Pages。
 
 ### album 目录结构
 

@@ -1,10 +1,16 @@
-<img src="./assets/logo.svg" align="center" />
+![](./assets/logo.svg)
 
 ## 特性
 
 - 纯静态，无需后端，部署简单，性能极佳
 - 支持采用 GitHub Actions 进行 CI/CD
 - 可单独为相册设置问题和答案
+
+## 预览
+
+![](./assets/preview.png)
+
+![](./assets/need_password.png)
 
 ## 快速上手
 
@@ -32,7 +38,7 @@ album:
     friendly_name: 秘密相册
     password: 2008           # 相册密码（可选）
     hint: 我出生的年份       # 相册密码提示问题（可选）
-    preview: IMG_1010.JPG
+    preview: IMG_1010.jpg
 ```
 
 ## Changelog

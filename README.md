@@ -1,43 +1,45 @@
 ![](./assets/logo.svg)
 
-## 特性
+[简体中文](./README_zh.md) | English
 
-- 纯静态，无需后端，部署简单，性能极佳
-- 支持采用 GitHub Actions 进行 CI/CD
-- 可单独为相册设置问题和答案
+## Features
 
-## 预览
+- Fully static, no backend required, easy to deploy, excellent performance
+- Supports CI/CD via GitHub Actions
+- Allows setting a password and hint for individual albums
+
+## Preview
 
 ![](./assets/preview.png)
 
 ![](./assets/need_password.png)
 
-## 快速上手
+## Quick Start
 
-首先，你需要在 GitHub 上选择 `Use this template` 按钮，然后填写相应信息，创建一个新的仓库。将 `./vue.config.js` 和 `./src/js/utils.js`中的 `publicPath` 设置为你仓库的名称（部署路径，如果你打算部署在根上则设置为 `/` 或直接删除该行），编辑 `album` 目录中的 `meta.yml` 文件和里面的照片，然后直接提交到仓库，GitHub Actions 会自动构建并部署到 GitHub Pages。
+First, click the `Use this template` button on GitHub to create a new repository. Set the `publicPath` in `./vue.config.js` and `./src/js/utils.js` to your repository name (the deployment path; set it to `/` or remove the line if you plan to deploy at the root). Then edit the `meta.yml` file and photos in the `album` directory, and push to your repository. GitHub Actions will automatically build and deploy to GitHub Pages.
 
-### album 目录结构
+### Album Directory Structure
 
 ```
 ./album
-├── meta.yml          # 相册信息
-└── travel            # 照片目录，与 meta.yml 中的相册名对应
-    ├── IMG_0001.jpg  # 照片文件，文件名可自定义
+├── meta.yml          # Album metadata
+└── travel            # Photo directory, corresponds to the album name in meta.yml
+    ├── IMG_0001.jpg  # Photo file, filename can be customized
     └── IMG_0010.jpg
 ```
 
-### meta.yml 示例
+### meta.yml Example
 
 ```yaml
-version: 1.0                 # 配置文件版本，默认 1.0
+version: 1.0                 # Config file version, default 1.0
 album:
-  - name: travel             # 相册文件夹名（注意不能为`default`）
-    friendly_name: 旅行      # 相册显示名
-    preview: IMG_0001.jpg    # 预览图（一定要填写实际存在的文件名）
+  - name: travel             # Album folder name (cannot be `default`)
+    friendly_name: Travel    # Album display name
+    preview: IMG_0001.jpg    # Preview image (must be an existing filename)
   - name: secret
-    friendly_name: 秘密相册
-    password: 2008           # 相册密码（可选）
-    hint: 我出生的年份       # 相册密码提示问题（可选）
+    friendly_name: Secret Album
+    password: 2008           # Album password (optional)
+    hint: The year I was born  # Album password hint (optional)
     preview: IMG_1010.jpg
 ```
 
